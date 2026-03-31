@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JWT Decoder - Decode JWT Tokens Online Free</title>
+<meta name="description" content="Decode and inspect JWT tokens instantly. See header, payload, signature. Free, no signup, runs in browser.">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="max-w-2xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold text-gray-800 mb-2">JWT Decoder</h1>
+  <p class="text-gray-500 mb-6">Paste a JWT token to decode header, payload, and inspect claims.</p>
+  <div class="bg-white rounded-xl shadow p-6 mb-4 space-y-4">
+    <textarea id="jwt" rows="4" class="w-full border rounded p-3 font-mono text-sm" placeholder="Paste JWT token here..." oninput="decode()"></textarea>
+    <div id="error" class="text-red-500 text-sm hidden"></div>
+    <div id="result" class="space-y-3 hidden">
+      <div>
+        <div class="text-xs font-bold text-pink-600 mb-1">HEADER</div>
+        <pre id="header" class="bg-pink-50 border border-pink-200 rounded p-3 text-sm overflow-auto"></pre>
+      </div>
+      <div>
+        <div class="text-xs font-bold text-blue-600 mb-1">PAYLOAD</div>
+        <pre id="payload" class="bg-blue-50 border border-blue-200 rounded p-3 text-sm overflow-auto"></pre>
+      </div>
+      <div>
+        <div class="text-xs font-bold text-gray-500 mb-1">SIGNATURE</div>
+        <div id="sig" class="bg-gray-50 border rounded p-3 font-mono text-xs break-all"></div>
+      </div>
+      <div id="expiry" class="text-sm"></div>
+    </div>
+  </div>
+  <p class="text-center text-gray-400 text-sm">Need custom tools? <a href="mailto:844332090@qq.com" class="text-blue-500 hover:underline">DM me</a></p>
+</div>
+<script>
+function b64decode(str){try{return JSON.parse(atob(str.replace(/-/g,'+').replace(/_/g,'/')));}catch(e){return null;}}
+function decode(){
+  const t=document.getElementById('jwt').value.trim();
+  const err=document.getElementById('error');
+  const res=document.getElementById('result');
+  if(!t){err.classList.add('hidden');res.classList.add('hidden');return;}
+  const parts=t.split('.');
+  if(parts.length!==3){err.textContent='Invalid JWT: must have 3 parts';err.classList.remove('hidden');res.classList.add('hidden');return;}
+  const h=b64decode(parts[0]),p=b64decode(parts[1]);
+  if(!h||!p){err.textContent='Failed to decode JWT parts';err.classList.remove('hidden');res.classList.add('hidden');return;}
+  err.classList.add('hidden');res.classList.remove('hidden');
+  document.getElementById('header').textContent=JSON.stringify(h,null,2);
+  document.getElementById('payload').textContent=JSON.stringify(p,null,2);
+  document.getElementById('sig').textContent=parts[2];
+  if(p.exp){const exp=new Date(p.exp*1000);const now=new Date();document.getElementById('expiry').innerHTML=exp<now?`<span class="text-red-500 font-semibold">✗ Expired: ${exp.toLocaleString()}</span>`:`<span class="text-green-600 font-semibold">✓ Valid until: ${exp.toLocaleString()}</span>`;}
+}
+</script>
+</body>
+</html>
